@@ -1,22 +1,16 @@
 "use client";
-// import { LatestPost } from "~/app/_components/post";
-// import { api, HydrateClient } from "~/trpc/server";
+
 import Link from "next/link";
 import Header from "../_components/Header";
 import { useState } from "react";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
-  // const hello = await api.post.hello({ text: "from tRPC" });
-
-  // void api.post.getLatest.prefetch();
-
   function toggleShowPassword() {
     setShowPassword((prev) => !prev);
   }
 
   return (
-    // <HydrateClient>
     <main>
       <Header />
 
@@ -77,6 +71,5 @@ export default function Login() {
         </div>
       </div>
     </main>
-    // </HydrateClient>
   );
 }

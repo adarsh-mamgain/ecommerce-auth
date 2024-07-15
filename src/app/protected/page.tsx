@@ -1,18 +1,13 @@
 "use client";
-// import { LatestPost } from "~/app/_components/post";
-// import { api, HydrateClient } from "~/trpc/server";
-import Link from "next/link";
 import Header from "../_components/Header";
-import { useState } from "react";
+import chevronRight from "../../../public/assets/chevron-right.svg";
+import chevronLeft from "../../../public/assets/chevron-left.svg";
+import anglesRight from "../../../public/assets/angles-right.svg";
+import anglesLeft from "../../../public/assets/angles-left.svg";
+import Image from "next/image";
 
 export default function Login() {
-  const [showPassword, setShowPassword] = useState(false);
-  // const hello = await api.post.hello({ text: "from tRPC" });
-
-  // void api.post.getLatest.prefetch();
-
   return (
-    // <HydrateClient>
     <main>
       <Header />
 
@@ -82,10 +77,52 @@ export default function Login() {
             </div>
           </form>
 
-          {/* <div >Pagination</div> */}
+          <nav
+            aria-label="Pagination"
+            className="mt-16 flex items-center justify-center gap-2 text-xl"
+          >
+            <button
+              aria-label="First page"
+              className="text-[#ACACAC] hover:text-black"
+            >
+              <Image src={anglesLeft} alt="" height={16} />
+            </button>
+            <button
+              aria-label="Previous page"
+              className="text-[#ACACAC] hover:text-black"
+            >
+              <Image src={chevronLeft} alt="" height={15} />
+            </button>
+            <ul className="flex gap-2">
+              {[1, 2, 3, 4, 5, 6, 7].map((page) => (
+                <li key={page}>
+                  <button
+                    className={`text-[#ACACAC] hover:text-black ${page === 4 ? "font-bold" : ""}`}
+                    aria-current={page === 4 ? "page" : undefined}
+                  >
+                    {page}
+                  </button>
+                </li>
+              ))}
+              <li>
+                <span className="text-[#ACACAC]">...</span>
+              </li>
+            </ul>
+            <button
+              aria-label="Next page"
+              className="text-[#ACACAC] hover:text-black"
+            >
+              <Image src={chevronRight} alt="" height={15} />
+            </button>
+            <button
+              aria-label="Last page"
+              className="text-[#ACACAC] hover:text-black"
+            >
+              <Image src={anglesRight} alt="" height={16} />
+            </button>
+          </nav>
         </div>
       </div>
     </main>
-    // </HydrateClient>
   );
 }
