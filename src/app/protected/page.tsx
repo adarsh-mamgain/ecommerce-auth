@@ -5,8 +5,41 @@ import chevronLeft from "../../../public/assets/chevron-left.svg";
 import anglesRight from "../../../public/assets/angles-right.svg";
 import anglesLeft from "../../../public/assets/angles-left.svg";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { api } from "~/trpc/react";
 
-export default function Login() {
+export default function Protected() {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  const verifyTokenMutation = api.auth.verifyToken.useMutation({
+    onSuccess: () => {
+      setIsLoading(false);
+    },
+    onError: () => {
+      localStorage.removeItem("token");
+      router.push("/login");
+    },
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      verifyTokenMutation.mutate();
+    }
+  }, [router, verifyTokenMutation]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center text-2xl font-medium">
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <main>
       <Header />

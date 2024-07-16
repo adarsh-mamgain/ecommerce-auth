@@ -2,7 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
-import { SignJWT } from "jose";
+import { jwtVerify, SignJWT } from "jose";
 import { env } from "~/env";
 
 export const authRouter = createTRPCRouter({
@@ -149,4 +149,26 @@ export const authRouter = createTRPCRouter({
 
       return { message: "Email verified successfully" };
     }),
+
+  verifyToken: publicProcedure.mutation(async ({ ctx }) => {
+    const authHeader = ctx.headers.get("authorization");
+    if (!authHeader) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "No token provided",
+      });
+    }
+
+    const token = authHeader.split(" ")[1] as string;
+    try {
+      const secret = new TextEncoder().encode(env.JWT_SECRET);
+      await jwtVerify(token, secret);
+      return { valid: true };
+    } catch (error) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "Invalid token",
+      });
+    }
+  }),
 });
