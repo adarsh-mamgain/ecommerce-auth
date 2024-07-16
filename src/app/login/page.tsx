@@ -1,14 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import Header from "../_components/Header";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Header from "../_components/Header";
+import Notification from "../_components/Notification";
+import { api } from "~/trpc/react";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
+  const router = useRouter();
+
+  const login = api.auth.login.useMutation({
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      setNotification("Login successful!");
+      setTimeout(() => {
+        router.push("/protected");
+      }, 1500);
+    },
+    onError: (error) => {
+      setNotification(error.message);
+    },
+  });
+
   function toggleShowPassword() {
     setShowPassword((prev) => !prev);
   }
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    login.mutate({ email, password });
+  };
 
   return (
     <main>
@@ -21,7 +47,7 @@ export default function Login() {
             Welcome back to ECOMMERCE
           </p>
           <p className="mb-8 text-center">The next gen business marketplace</p>
-          <form action="" method="post">
+          <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-8">
               <div className="flex flex-col gap-1">
                 <label htmlFor="email">Email</label>
@@ -31,16 +57,20 @@ export default function Login() {
                   id="email"
                   placeholder="Enter"
                   className="rounded-[6px] border border-[#C1C1C1] p-4"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label htmlFor="name">Password</label>
+                <label htmlFor="password">Password</label>
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
                   id="password"
                   placeholder="Enter"
                   className="rounded-[6px] border border-[#C1C1C1] p-4"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <span
                   onClick={toggleShowPassword}
@@ -53,8 +83,9 @@ export default function Login() {
                 <button
                   type="submit"
                   className="w-full rounded-[6px] bg-black p-4 font-medium text-white"
+                  disabled={login.isPending}
                 >
-                  LOGIN
+                  {login.isPending ? "Logging in..." : "LOGIN"}
                 </button>
               </div>
               <hr className="border-[#C1C1C1]" />
@@ -70,6 +101,12 @@ export default function Login() {
           </form>
         </div>
       </div>
+      {notification && (
+        <Notification
+          message={notification}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </main>
   );
 }
