@@ -6,11 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
+import { JWTPayload, jwtVerify } from "jose";
+import { env } from "~/env.js";
 
 /**
  * 1. CONTEXT
@@ -81,3 +83,45 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure;
+
+interface CustomJWTPayload extends JWTPayload {
+  userId: number;
+}
+
+const isAuthed = t.middleware(async ({ ctx, next }) => {
+  const authHeader = ctx.headers.get("authorization");
+  if (!authHeader) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const token = authHeader.split(" ")[1] as string;
+  try {
+    const secret = new TextEncoder().encode(env.JWT_SECRET);
+    const { payload } = (await jwtVerify(token, secret)) as {
+      payload: CustomJWTPayload;
+    };
+
+    if (!payload.userId) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: payload.userId },
+    });
+
+    if (!user) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user,
+      },
+    });
+  } catch (error) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+});
+
+export const protectedProcedure = t.procedure.use(isAuthed);
