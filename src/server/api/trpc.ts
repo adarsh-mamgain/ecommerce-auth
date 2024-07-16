@@ -11,7 +11,7 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { db } from "~/server/db";
-import { JWTPayload, jwtVerify } from "jose";
+import { type JWTPayload, jwtVerify } from "jose";
 import { env } from "~/env.js";
 
 /**
@@ -94,7 +94,7 @@ const isAuthed = t.middleware(async ({ ctx, next }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const token = authHeader.split(" ")[1] as string;
+  const token = authHeader.split(" ")[1]!;
   try {
     const secret = new TextEncoder().encode(env.JWT_SECRET);
     const { payload } = (await jwtVerify(token, secret)) as {

@@ -31,7 +31,9 @@ export default function Protected() {
 
   const updateCategory = api.category.updateUserCategory.useMutation({
     onSuccess: () => {
-      utils.category.getCategories.invalidate({ page, pageSize });
+      utils.category.getCategories
+        .invalidate({ page, pageSize })
+        .then(() => {});
     },
   });
 
@@ -95,25 +97,23 @@ export default function Protected() {
             aria-label="Pagination"
             className="mt-16 flex items-center justify-center gap-2 text-xl"
           >
-            <button
-              aria-label="First page"
-              className="text-[#ACACAC] hover:text-black"
+            <Image
+              src={anglesLeft}
+              alt=""
+              height={16}
               onClick={() => setPage(1)}
-              disabled={page === 1}
-            >
-              <Image src={anglesLeft} alt="" height={16} />
-            </button>
-            <button
-              aria-label="Previous page"
-              className="text-[#ACACAC] hover:text-black"
+              className={`cursor-pointer`}
+            />
+            <Image
+              src={chevronLeft}
+              alt=""
+              height={15}
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-            >
-              <Image src={chevronLeft} alt="" height={15} />
-            </button>
+              className={`cursor-pointer`}
+            />
             <ul className="flex gap-2">
               {Array.from(
-                { length: data?.totalPages || 0 },
+                { length: data?.totalPages ?? 0 },
                 (_, i) => i + 1,
               ).map((pageNum) => (
                 <li key={pageNum}>
@@ -127,24 +127,22 @@ export default function Protected() {
                 </li>
               ))}
             </ul>
-            <button
-              aria-label="Next page"
-              className="text-[#ACACAC] hover:text-black"
+            <Image
+              src={chevronRight}
+              alt=""
+              height={15}
               onClick={() =>
-                setPage((prev) => Math.min(prev + 1, data?.totalPages || 1))
+                setPage((prev) => Math.min(prev + 1, data?.totalPages ?? 1))
               }
-              disabled={page === data?.totalPages}
-            >
-              <Image src={chevronRight} alt="" height={15} />
-            </button>
-            <button
-              aria-label="Last page"
-              className="text-[#ACACAC] hover:text-black"
-              onClick={() => setPage(data?.totalPages || 1)}
-              disabled={page === data?.totalPages}
-            >
-              <Image src={anglesRight} alt="" height={16} />
-            </button>
+              className={`cursor-pointer`}
+            />
+            <Image
+              src={anglesRight}
+              alt=""
+              height={16}
+              onClick={() => setPage(data?.totalPages ?? 1)}
+              className={`cursor-pointer`}
+            />
           </nav>
         </div>
       </div>

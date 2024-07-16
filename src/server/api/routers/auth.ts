@@ -159,7 +159,7 @@ export const authRouter = createTRPCRouter({
       });
     }
 
-    const token = authHeader.split(" ")[1] as string;
+    const token = authHeader.split(" ")[1]!;
     try {
       const secret = new TextEncoder().encode(env.JWT_SECRET);
       await jwtVerify(token, secret);
