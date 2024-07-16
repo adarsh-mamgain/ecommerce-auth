@@ -2,13 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import Header from "../_components/Header";
 import { api } from "~/trpc/react";
 import chevronRight from "../../../public/assets/chevron-right.svg";
 import chevronLeft from "../../../public/assets/chevron-left.svg";
 import anglesRight from "../../../public/assets/angles-right.svg";
 import anglesLeft from "../../../public/assets/angles-left.svg";
+
+const chevronRightImage: StaticImageData = chevronRight;
+const chevronLeftImage: StaticImageData = chevronLeft;
+const anglesRightImage: StaticImageData = anglesRight;
+const anglesLeftImage: StaticImageData = anglesLeft;
 
 export default function Protected() {
   const [isLoading, setIsLoading] = useState(true);
@@ -30,10 +35,8 @@ export default function Protected() {
   );
 
   const updateCategory = api.category.updateUserCategory.useMutation({
-    onSuccess: () => {
-      utils.category.getCategories
-        .invalidate({ page, pageSize })
-        .then(() => {});
+    onSuccess: async () => {
+      await utils.category.getCategories.invalidate({ page, pageSize });
     },
   });
 
@@ -98,14 +101,14 @@ export default function Protected() {
             className="mt-16 flex items-center justify-center gap-2 text-xl"
           >
             <Image
-              src={anglesLeft}
+              src={anglesLeftImage}
               alt=""
               height={16}
               onClick={() => setPage(1)}
               className={`cursor-pointer`}
             />
             <Image
-              src={chevronLeft}
+              src={chevronLeftImage}
               alt=""
               height={15}
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
@@ -128,7 +131,7 @@ export default function Protected() {
               ))}
             </ul>
             <Image
-              src={chevronRight}
+              src={chevronRightImage}
               alt=""
               height={15}
               onClick={() =>
@@ -137,7 +140,7 @@ export default function Protected() {
               className={`cursor-pointer`}
             />
             <Image
-              src={anglesRight}
+              src={anglesRightImage}
               alt=""
               height={16}
               onClick={() => setPage(data?.totalPages ?? 1)}

@@ -1,8 +1,13 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import search from "../../../public/assets/search.svg";
 import cart from "../../../public/assets/cart.svg";
 import leftArrow from "../../../public/assets/left-arrow.svg";
 import rightArrow from "../../../public/assets/right-arrow.svg";
+
+const searchImage: StaticImageData = search;
+const cartImage: StaticImageData = cart;
+const leftArrowImage: StaticImageData = leftArrow;
+const rightArrowImage: StaticImageData = rightArrow;
 
 export default function Header() {
   return (
@@ -25,15 +30,15 @@ export default function Header() {
             <span>Trending</span>
           </nav>
           <div className="flex items-center gap-8">
-            <Image src={search} alt="search" />
-            <Image src={cart} alt="cart" />
+            <Image src={searchImage} alt="search" />
+            <Image src={cartImage} alt="cart" />
           </div>
         </div>
       </header>
       <div className="font-sm flex justify-center gap-8 bg-[#f4f4f4] py-2">
-        <Image src={leftArrow} alt="left-arrow" />
+        <Image src={leftArrowImage} alt="left-arrow" />
         <span>Get 10% off on business sign up</span>
-        <Image src={rightArrow} alt="right-arrow" />
+        <Image src={rightArrowImage} alt="right-arrow" />
       </div>
     </>
   );
