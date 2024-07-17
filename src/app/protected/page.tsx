@@ -142,7 +142,7 @@ export default function Protected() {
 
                 return (
                   <>
-                    {/* @ts-expect-error */}
+                    {/* @ts-expect-error Need to bypass type checking for dynamic pageNumbers access */}
                     {pageNumbers[0] > 1 && (
                       <>
                         <li>
@@ -167,7 +167,7 @@ export default function Protected() {
                         </button>
                       </li>
                     ))}
-                    {/* @ts-expect-error */}
+                    {/* @ts-expect-error Need to bypass type checking for dynamic pageNumbers access */}
                     {pageNumbers[pageNumbers.length - 1] < totalPages && (
                       <>
                         <li className="text-[#ACACAC]">...</li>
