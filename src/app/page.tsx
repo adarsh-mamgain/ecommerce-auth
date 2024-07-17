@@ -29,6 +29,7 @@ export default function Home() {
 
   const verifyEmail = api.auth.verifyEmail.useMutation({
     onSuccess: () => {
+      localStorage.setItem("token", "");
       setNotification("Email verified successfully!");
       setTimeout(() => {
         router.push("/login");

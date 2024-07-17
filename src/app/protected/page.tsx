@@ -90,50 +90,116 @@ export default function Protected() {
             aria-label="Pagination"
             className="mt-16 flex items-center justify-center gap-2 text-xl"
           >
-            <button onClick={() => setPage(1)}>
-              <img src="/assets/angles-left.svg" width={15} alt="angles-left" />
-            </button>
-            <button onClick={() => setPage((prev) => Math.max(prev - 1, 1))}>
-              <img
-                src="/assets/chevron-left.svg"
-                width={15}
-                alt="chevron-left"
-              />
-            </button>
+            <img
+              src="/assets/angles-left.svg"
+              width={16}
+              alt="angles-left"
+              onClick={() => setPage(1)}
+              className="cursor-pointer"
+            />
+            <img
+              src="/assets/chevron-left.svg"
+              width={10}
+              height={10}
+              alt="chevron-left"
+              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+              className="cursor-pointer"
+            />
             <ul className="flex gap-2">
-              {Array.from(
-                { length: data?.totalPages ?? 0 },
-                (_, i) => i + 1,
-              ).map((pageNum) => (
-                <li key={pageNum}>
-                  <button
-                    className={`text-[#ACACAC] hover:text-black ${pageNum === page ? "font-bold" : ""}`}
-                    aria-current={pageNum === page ? "page" : undefined}
-                    onClick={() => setPage(pageNum)}
-                  >
-                    {pageNum}
-                  </button>
-                </li>
-              ))}
+              {(() => {
+                const totalPages = data?.totalPages ?? 0;
+                let pageNumbers = [];
+                if (totalPages <= 7) {
+                  pageNumbers = Array.from(
+                    { length: totalPages },
+                    (_, i) => i + 1,
+                  );
+                } else {
+                  if (page <= 4) {
+                    pageNumbers = [1, 2, 3, 4, 5, 6, 7];
+                  } else if (page > totalPages - 4) {
+                    pageNumbers = [
+                      totalPages - 6,
+                      totalPages - 5,
+                      totalPages - 4,
+                      totalPages - 3,
+                      totalPages - 2,
+                      totalPages - 1,
+                      totalPages,
+                    ];
+                  } else {
+                    pageNumbers = [
+                      page - 3,
+                      page - 2,
+                      page - 1,
+                      page,
+                      page + 1,
+                      page + 2,
+                      page + 3,
+                    ];
+                  }
+                }
+
+                return (
+                  <>
+                    {pageNumbers[0] > 1 && (
+                      <>
+                        <li>
+                          <button
+                            className="text-[#ACACAC] hover:text-black"
+                            onClick={() => setPage(1)}
+                          >
+                            1
+                          </button>
+                        </li>
+                        <li className="text-[#ACACAC]">...</li>
+                      </>
+                    )}
+                    {pageNumbers.map((pageNum) => (
+                      <li key={pageNum}>
+                        <button
+                          className={`text-[#ACACAC] hover:text-black ${pageNum === page ? "font-bold text-black" : ""}`}
+                          aria-current={pageNum === page ? "page" : undefined}
+                          onClick={() => setPage(pageNum)}
+                        >
+                          {pageNum}
+                        </button>
+                      </li>
+                    ))}
+                    {pageNumbers[pageNumbers.length - 1] < totalPages && (
+                      <>
+                        <li className="text-[#ACACAC]">...</li>
+                        <li>
+                          <button
+                            className="text-[#ACACAC] hover:text-black"
+                            onClick={() => setPage(totalPages)}
+                          >
+                            {totalPages}
+                          </button>
+                        </li>
+                      </>
+                    )}
+                  </>
+                );
+              })()}
             </ul>
-            <button
+            <img
+              src="/assets/chevron-right.svg"
+              width={10}
+              height={10}
+              alt="chevron-right"
               onClick={() =>
                 setPage((prev) => Math.min(prev + 1, data?.totalPages ?? 1))
               }
-            >
-              <img
-                src="/assets/chevron-right.svg"
-                width={15}
-                alt="chevron-right"
-              />
-            </button>
-            <button onClick={() => setPage(data?.totalPages ?? 1)}>
-              <img
-                src="/assets/angles-right.svg"
-                width={15}
-                alt="angles-right"
-              />
-            </button>
+              className="cursor-pointer"
+            />
+            <img
+              src="/assets/angles-right.svg"
+              width={16}
+              alt="angles-right"
+              onClick={() => setPage(data?.totalPages ?? 1)}
+              className="cursor-pointer"
+            />
           </nav>
         </div>
       </div>
