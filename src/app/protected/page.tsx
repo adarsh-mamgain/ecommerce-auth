@@ -142,7 +142,7 @@ export default function Protected() {
 
                 return (
                   <>
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error */}
                     {pageNumbers[0] > 1 && (
                       <>
                         <li>
@@ -167,7 +167,7 @@ export default function Protected() {
                         </button>
                       </li>
                     ))}
-                    {/* @ts-ignore */}
+                    {/* @ts-expect-error */}
                     {pageNumbers[pageNumbers.length - 1] < totalPages && (
                       <>
                         <li className="text-[#ACACAC]">...</li>
