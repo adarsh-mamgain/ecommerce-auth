@@ -20,7 +20,7 @@ export default function Login() {
       setNotification("Login successful!");
       setTimeout(() => {
         router.push("/protected");
-      }, 1500);
+      }, 1000);
     },
     onError: (error) => {
       setNotification(error.message);

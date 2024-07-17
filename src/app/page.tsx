@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Header from "./_components/Header";
@@ -12,7 +12,8 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [verificationSent, setVerificationSent] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", "", "", ""]);
+  const otpInputs = useRef<(HTMLInputElement | null)[]>([]);
   const [notification, setNotification] = useState<string | null>(null);
   const router = useRouter();
 
@@ -31,7 +32,7 @@ export default function Home() {
       setNotification("Email verified successfully!");
       setTimeout(() => {
         router.push("/login");
-      }, 2000); // Redirect to login page after 2 seconds
+      }, 1000);
     },
     onError: (error) => {
       setNotification(error.message);
@@ -45,7 +46,7 @@ export default function Home() {
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    verifyEmail.mutate({ email, otp });
+    verifyEmail.mutate({ email, otp: otp.join("") });
   };
 
   const hideEmail = (email: string) => {
@@ -55,6 +56,43 @@ export default function Home() {
         ? (username ?? "").slice(0, 3) + "*".repeat((username ?? "").length - 3)
         : (username ?? "") + "*".repeat((username ?? "").length - 1);
     return `${hiddenUsername}@${domain}`;
+  };
+
+  const inputRef = useCallback(
+    (index: number) => (el: HTMLInputElement | null) => {
+      otpInputs.current[index] = el;
+    },
+    [],
+  );
+
+  const handleOtpChange = (index: number, value: string) => {
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    if (value && index < 7) {
+      otpInputs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      otpInputs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text");
+    const pastedOtp = pastedData
+      .slice(0, 8)
+      .split("")
+      .map((char) => char.replace(/\D/g, ""));
+    setOtp(pastedOtp.concat(Array(8 - pastedOtp.length).fill("")));
+    otpInputs.current[pastedOtp.length - 1]?.focus();
   };
 
   if (verificationSent) {
@@ -73,16 +111,20 @@ export default function Home() {
             </p>
             <form onSubmit={handleVerify}>
               <div className="flex flex-col gap-8">
-                <div className="flex flex-col gap-1">
-                  <label htmlFor="code">Code</label>
-                  <input
-                    type="text"
-                    id="code"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="rounded-[6px] border border-[#C1C1C1] p-4"
-                    maxLength={8}
-                  />
+                <div className="flex justify-between gap-2">
+                  {otp.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                      onPaste={handleOtpPaste}
+                      ref={inputRef(index)}
+                      className="h-12 w-12 rounded-md border border-[#C1C1C1] text-center text-xl"
+                    />
+                  ))}
                 </div>
                 <div className="pt-[8px]">
                   <button
