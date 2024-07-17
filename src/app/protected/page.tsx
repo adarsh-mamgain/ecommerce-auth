@@ -2,18 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image, { type StaticImageData } from "next/image";
 import Header from "../_components/Header";
 import { api } from "~/trpc/react";
-import chevronRight from "../../../public/assets/chevron-right.svg";
-import chevronLeft from "../../../public/assets/chevron-left.svg";
-import anglesRight from "../../../public/assets/angles-right.svg";
-import anglesLeft from "../../../public/assets/angles-left.svg";
-
-const chevronRightImage: StaticImageData = chevronRight;
-const chevronLeftImage: StaticImageData = chevronLeft;
-const anglesRightImage: StaticImageData = anglesRight;
-const anglesLeftImage: StaticImageData = anglesLeft;
 
 export default function Protected() {
   const [isLoading, setIsLoading] = useState(true);
@@ -100,20 +90,16 @@ export default function Protected() {
             aria-label="Pagination"
             className="mt-16 flex items-center justify-center gap-2 text-xl"
           >
-            <Image
-              src={anglesLeftImage}
-              alt=""
-              height={16}
-              onClick={() => setPage(1)}
-              className={`cursor-pointer`}
-            />
-            <Image
-              src={chevronLeftImage}
-              alt=""
-              height={15}
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              className={`cursor-pointer`}
-            />
+            <button onClick={() => setPage(1)}>
+              <img src="/assets/angles-left.svg" width={15} alt="angles-left" />
+            </button>
+            <button onClick={() => setPage((prev) => Math.max(prev - 1, 1))}>
+              <img
+                src="/assets/chevron-left.svg"
+                width={15}
+                alt="chevron-left"
+              />
+            </button>
             <ul className="flex gap-2">
               {Array.from(
                 { length: data?.totalPages ?? 0 },
@@ -130,22 +116,24 @@ export default function Protected() {
                 </li>
               ))}
             </ul>
-            <Image
-              src={chevronRightImage}
-              alt=""
-              height={15}
+            <button
               onClick={() =>
                 setPage((prev) => Math.min(prev + 1, data?.totalPages ?? 1))
               }
-              className={`cursor-pointer`}
-            />
-            <Image
-              src={anglesRightImage}
-              alt=""
-              height={16}
-              onClick={() => setPage(data?.totalPages ?? 1)}
-              className={`cursor-pointer`}
-            />
+            >
+              <img
+                src="/assets/chevron-right.svg"
+                width={15}
+                alt="chevron-right"
+              />
+            </button>
+            <button onClick={() => setPage(data?.totalPages ?? 1)}>
+              <img
+                src="/assets/angles-right.svg"
+                width={15}
+                alt="angles-right"
+              />
+            </button>
           </nav>
         </div>
       </div>
